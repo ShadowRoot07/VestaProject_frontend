@@ -10,13 +10,18 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      await login(username, password);
-      navigate('/dashboard');
-    } catch (error) {
-      alert('Error al iniciar sesión. Revisa tus datos o el CORS');
-    }
+        console.log("Intentando login con:", username); // LOG 1
+        try {
+          const result = await login(username, password);
+          console.log("Login exitoso, datos recibidos:", result); // LOG 2
+      
+          console.log("Navegando a dashboard..."); // LOG 3
+          navigate('/dashboard');
+        } catch (error) {
+          console.log("Error detectado en el catch:", error);
+        }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">

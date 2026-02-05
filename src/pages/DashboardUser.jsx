@@ -24,23 +24,33 @@ export const DashboardUser = () => {
   // Usamos useCallback para que la función sea estable en el testing
   const fetchProducts = useCallback(async () => {
     if (loading || !hasMore) return;
-    
-    setLoading(true);
-    
-    // Simulamos un retraso de red de 1 segundo
-    setTimeout(() => {
-      const newProducts = generateMockProducts(page);
-      
-      // Si llegamos a la página 5, paramos (simulando fin de datos)
-      if (page >= 5) {
-        setHasMore(false);
-      }
 
-      setProducts((prev) => [...prev, ...newProducts]);
-      setPage((prev) => prev + 1);
+    setLoading(true);
+    try {
+      // Llamada real a tu endpoint de Render
+      const response = await api.get(`/products?page=${page}&limit=10`);
+      const newProducts = response.data;
+
+      if (newProducts.length === 0) {
+        setHasMore(false);
+      } else {
+        setProducts((prev) => {
+          // Filtro de seguridad: Solo agregamos si el ID no existe ya en el estado
+          const existingIds = new Set(prev.map(p => p.id));
+          const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewProducts];
+        });
+        setPage((prev) => prev + 1);
+      }
+    } catch (error) {
+      console.error("Error cargando productos reales:", error);
+      setHasMore(false); // Detener el scroll si hay error
+    } finally {
       setLoading(false);
-    }, 1000);
+    }
   }, [page, loading, hasMore]);
+
+
 
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {

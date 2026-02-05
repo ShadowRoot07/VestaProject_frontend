@@ -15,12 +15,12 @@ function App() {
 
         {/* Ruta para Usuarios y Admins */}
         <Route path="/dashboard" element={
-          <ProtectedRoute allowedRoles={['user', 'admin']}>
-            <Layout>
-                <DashboardUser />
-            </Layout>
-          </ProtectedRoute>
-        } />
+            <ProtectedRoute> {/* Quita el allowedRoles por ahora */}
+                <Layout>
+                    <DashboardUser />
+                </Layout>
+            </ProtectedRoute>
+        } />  
 
         {/* Ruta SOLO para Admins */}
         <Route path="/admin" element={
