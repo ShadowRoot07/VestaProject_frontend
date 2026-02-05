@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { ProductCard } from '../components/ProductCard';
+import api from '../services/api'; 
+
 
 // Función para simular datos (ShadowRoot07, esto es solo para el test)
 const generateMockProducts = (page) => {
@@ -23,32 +25,27 @@ export const DashboardUser = () => {
 
   // Usamos useCallback para que la función sea estable en el testing
   const fetchProducts = useCallback(async () => {
-    if (loading || !hasMore) return;
+  if (loading || !hasMore) return;
+  setLoading(true);
 
-    setLoading(true);
-    try {
-      // Llamada real a tu endpoint de Render
-      const response = await api.get(`/products?page=${page}&limit=10`);
-      const newProducts = response.data;
-
-      if (newProducts.length === 0) {
-        setHasMore(false);
-      } else {
-        setProducts((prev) => {
-          // Filtro de seguridad: Solo agregamos si el ID no existe ya en el estado
-          const existingIds = new Set(prev.map(p => p.id));
-          const uniqueNewProducts = newProducts.filter(p => !existingIds.has(p.id));
-          return [...prev, ...uniqueNewProducts];
-        });
-        setPage((prev) => prev + 1);
-      }
-    } catch (error) {
-      console.error("Error cargando productos reales:", error);
-      setHasMore(false); // Detener el scroll si hay error
-    } finally {
-      setLoading(false);
+  try {
+    // Asegúrate de que 'api' esté importado arriba
+    const response = await api.get('/products/'); 
+    console.log("Datos de la DB:", response.data);
+    
+    if (response.data.length === 0) {
+      setHasMore(false);
+    } else {
+      setProducts(response.data);
+      setHasMore(false); // Desactivamos el scroll infinito por ahora para testear
     }
-  }, [page, loading, hasMore]);
+  } catch (error) {
+    console.log("Error detallado:", error.message);
+    setHasMore(false);
+  } finally {
+    setLoading(false);
+  }
+}, [loading, hasMore]);
 
 
 
