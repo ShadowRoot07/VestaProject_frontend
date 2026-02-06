@@ -5,11 +5,14 @@ import { useAuth } from '../context/AuthContext';
 export const Navbar = () => {
   const { user, logout } = useAuth();
 
+  if (!user) return null;
+
   const navLinks = [
     { name: 'Inicio', path: '/dashboard', icon: <Home size={24} /> },
     { name: 'Tienda', path: '/shop', icon: <ShoppingBag size={24} /> },
     { name: 'Perfil', path: '/profile', icon: <User size={24} /> },
   ];
+  
 
   // Si es admin, añadimos el link de ajustes
   if (user?.role === 'admin') {

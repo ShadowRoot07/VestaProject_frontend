@@ -5,6 +5,8 @@ import { DashboardAdmin } from './pages/DashboardAdmin';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { Layout } from './components/Layout';
 import Register from './pages/Register.jsx';
+import { Shop } from './pages/Shop';
+import { Profile } from './pages/Profile';
 
 function App() {
   return (
@@ -33,6 +35,18 @@ function App() {
 
         {/* Redirección por defecto: Si no existe la ruta, al login */}
         <Route path="*" element={<Navigate to="/login" />} />
+        // ... dentro de Routes
+        <Route path="/shop" element={
+            <ProtectedRoute>
+                <Layout><Shop /></Layout>
+            </ProtectedRoute>
+        } />
+
+        <Route path="/profile" element={
+            <ProtectedRoute>
+                <Layout><Profile /></Layout>
+            </ProtectedRoute>
+        } />
       </Routes>
     </BrowserRouter>
   );
