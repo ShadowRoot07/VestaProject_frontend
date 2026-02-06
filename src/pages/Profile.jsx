@@ -1,12 +1,110 @@
-import { useAuth } from '../context/AuthContext';
+import { useState, useEffect } from 'react';
+import api from '../services/api';
+import { Modal } from '../components/Modal';
+import { ShoppingCart, Heart, ShoppingBag, Wallet, ChevronRight, Loader2 } from 'lucide-react';
 
 export const Profile = () => {
-  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeModal, setActiveModal] = useState(null); // 'cart', 'likes', 'orders'
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await api.get('/users/me');
+        setProfile(response.data);
+      } catch (error) {
+        console.error("Error al cargar perfil:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProfile();
+  }, []);
+
+  if (loading) return (
+    <div className="flex justify-center items-center h-64">
+      <Loader2 className="animate-spin text-blue-600" size={40} />
+    </div>
+  );
+
   return (
-    <div className="p-4">
-      <h2 className="text-2xl font-bold">Mi Perfil</h2>
-      <p className="mt-2 text-gray-600">Usuario: <span className="font-mono">{user?.token?.substring(0, 10)}...</span></p>
+    <div className="max-w-2xl mx-auto pb-10">
+      {/* Tarjeta de Usuario */}
+      <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100 text-center mb-8">
+        <div className="w-24 h-24 bg-gradient-to-tr from-blue-600 to-blue-400 rounded-full mx-auto flex items-center justify-center text-white text-3xl font-black mb-4 shadow-lg">
+          {profile?.username?.[0].toUpperCase()}
+        </div>
+        <h2 className="text-2xl font-black text-gray-800">{profile?.username}</h2>
+        <p className="text-gray-500 mb-6">{profile?.email}</p>
+        
+        <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-6 py-3 rounded-2xl font-bold">
+          <Wallet size={20}/>
+          <span className="text-lg">${profile?.balance.toFixed(2)}</span>
+        </div>
+      </div>
+
+      {/* Menú de Opciones */}
+      <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+        <MenuOption 
+          icon={ShoppingCart} title="Mi Carrito" 
+          count={profile?.cart_count} 
+          onClick={() => setActiveModal('cart')} 
+        />
+        <MenuOption 
+          icon={Heart} title="Mis Corazones" 
+          count={profile?.likes_count} 
+          onClick={() => setActiveModal('likes')} 
+        />
+        <MenuOption 
+          icon={ShoppingBag} title="Mis Compras" 
+          count={profile?.purchases_count} 
+          onClick={() => setActiveModal('orders')} 
+        />
+      </div>
+
+      {/* --- MODALES RECICLABLES --- */}
+      
+      <Modal 
+        isOpen={activeModal === 'cart'} 
+        onClose={() => setActiveModal(null)}
+        title="Tu Carrito de Compras"
+      >
+        <div className="text-center py-10 text-gray-500">
+          <ShoppingCart size={48} className="mx-auto mb-4 opacity-20" />
+          <p>Tienes {profile?.cart_count} productos esperando.</p>
+          <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
+            Ir a pagar
+          </button>
+        </div>
+      </Modal>
+
+      <Modal 
+        isOpen={activeModal === 'likes'} 
+        onClose={() => setActiveModal(null)}
+        title="Productos Favoritos"
+      >
+        <p className="text-center text-gray-500">Aquí verás los productos que te hicieron feliz. ({profile?.likes_count})</p>
+      </Modal>
+
     </div>
   );
 };
+
+// Sub-componente para las filas del menú
+const MenuOption = ({ icon: Icon, title, count, onClick }) => (
+  <button 
+    onClick={onClick}
+    className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition border-b border-gray-50 last:border-0"
+  >
+    <div className="flex items-center gap-4">
+      <div className="p-3 bg-gray-100 text-gray-600 rounded-xl"><Icon size={22}/></div>
+      <div className="text-left">
+        <p className="font-bold text-gray-800">{title}</p>
+        <p className="text-sm text-blue-600 font-medium">{count} elementos</p>
+      </div>
+    </div>
+    <ChevronRight size={20} className="text-gray-300" />
+  </button>
+);
 
