@@ -64,21 +64,37 @@ export const Profile = () => {
       </div>
 
       {/* --- MODALES RECICLABLES --- */}
-      
       <Modal 
-        isOpen={activeModal === 'cart'} 
-        onClose={() => setActiveModal(null)}
-        title="Tu Carrito de Compras"
-      >
-        <div className="text-center py-10 text-gray-500">
-          <ShoppingCart size={48} className="mx-auto mb-4 opacity-20" />
-          <p>Tienes {profile?.cart_count} productos esperando.</p>
-          <button className="mt-6 w-full bg-blue-600 text-white py-3 rounded-xl font-bold hover:bg-blue-700 transition">
-            Ir a pagar
-          </button>
+  isOpen={activeModal === 'cart'} 
+  onClose={() => setActiveModal(null)}
+  title="Tu Carrito"
+>
+  <div className="space-y-4">
+    {profile?.cart_items?.length > 0 ? (
+      profile.cart_items.map(item => (
+        <div key={item.id} className="flex justify-between items-center border-b pb-2">
+          <div>
+            <p className="font-bold text-gray-800">{item.name}</p>
+            <p className="text-sm text-blue-600">${item.price}</p>
+          </div>
+          <button className="text-red-500 text-sm hover:underline">Eliminar</button>
         </div>
-      </Modal>
-
+      ))
+    ) : (
+      <p className="text-center text-gray-500 py-4">El carrito está vacío</p>
+    )}
+    <div className="pt-4 border-t">
+      <div className="flex justify-between font-black text-xl mb-4">
+        <span>Total:</span>
+        <span>${profile?.cart_items?.reduce((acc, curr) => acc + curr.price, 0).toFixed(2)}</span>
+      </div>
+      <button className="w-full bg-blue-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-blue-200">
+        Confirmar Compra
+      </button>
+    </div>
+  </div>
+</Modal>
+      
       <Modal 
         isOpen={activeModal === 'likes'} 
         onClose={() => setActiveModal(null)}
