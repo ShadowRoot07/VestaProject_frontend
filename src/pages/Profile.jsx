@@ -65,45 +65,45 @@ export const Profile = () => {
 
       {/* --- MODALES RECICLABLES --- */}
         <Modal 
-  isOpen={activeModal === 'cart'} 
-  onClose={() => setActiveModal(null)}
-  title="Mi Carrito"
->
-  <div className="space-y-4">
-    {profile?.cart_items && profile.cart_items.length > 0 ? (
-      profile.cart_items.map((item) => (
-        <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
-          <div className="flex items-center gap-3">
-            <img src={item.image_url} className="w-12 h-12 rounded-lg object-cover" />
-            <div>
-              <p className="font-bold text-gray-800 text-sm">{item.name}</p>
-              <p className="text-blue-600 font-bold">${item.price}</p>
-            </div>
-          </div>
-          <button className="text-red-400 hover:text-red-600 p-2">
-            <X size={18} />
-          </button>
-        </div>
-      ))
-    ) : (
-      <div className="text-center py-8 text-gray-400">Tu carrito está vacío 🛒</div>
-    )}
+            isOpen={activeModal === 'cart'} 
+            onClose={() => setActiveModal(null)}
+            title="Mi Carrito"
+        >
+            <div className="space-y-4">
+                {profile?.cart_items && profile.cart_items.length > 0 ? (
+                    profile.cart_items.map((item) => (
+                        <div key={item.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-2xl">
+                        <div className="flex items-center gap-3">
+                            <img src={item.image_url} className="w-12 h-12 rounded-lg object-cover" />
+                            <div>
+                                  <p className="font-bold text-gray-800 text-sm">{item.name}</p>
+                                  <p className="text-blue-600 font-bold">${item.price}</p>
+                            </div>
+                          </div>
+                          <button className="text-red-400 hover:text-red-600 p-2">
+                             <X size={18} />
+                          </button>
+                        </div>
+                    ))
+                ) : (
+            <div className="text-center py-8 text-gray-400">Tu carrito está vacío 🛒</div>
+                )}
     
-    {profile?.cart_items?.length > 0 && (
-      <div className="pt-4 mt-2 border-t border-dashed">
-        <div className="flex justify-between items-center mb-4">
-          <span className="text-gray-500">Total a pagar:</span>
-          <span className="text-2xl font-black text-gray-900">
-            ${profile.cart_items.reduce((acc, item) => acc + item.price, 0).toFixed(2)}
-          </span>
-        </div>
-        <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
-          Finalizar Compra
-        </button>
-      </div>
-    )}
-  </div>
-</Modal>
+                {profile?.cart_items?.length > 0 && (
+              <div className="pt-4 mt-2 border-t border-dashed">
+                <div className="flex justify-between items-center mb-4">
+                  <span className="text-gray-500">Total a pagar:</span>
+                  <span className="text-2xl font-black text-gray-900">
+                    ${profile.cart_items.reduce((acc, item) => acc + item.price, 0).toFixed(2)}
+                  </span>
+                </div>
+                <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold shadow-lg shadow-blue-200 hover:bg-blue-700 transition">
+                  Finalizar Compra
+                </button>
+              </div>
+            )}
+          </div>
+        </Modal>
 
       <Modal 
         isOpen={activeModal === 'likes'} 
