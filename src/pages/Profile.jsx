@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Modal } from '../components/Modal';
-import { ShoppingCart, Heart, ShoppingBag, Wallet, ChevronRight, Loader2 } from 'lucide-react';
+import { ShoppingCart, Heart, ShoppingBag, Wallet, ChevronRight, Loader2, X } from 'lucide-react';
+
 
 export const Profile = () => {
   const [profile, setProfile] = useState(null);
@@ -45,23 +46,26 @@ export const Profile = () => {
       </div>
 
       {/* Menú de Opciones */}
-      <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
-        <MenuOption 
-          icon={ShoppingCart} title="Mi Carrito" 
-          count={profile?.cart_count} 
-          onClick={() => setActiveModal('cart')} 
-        />
-        <MenuOption 
-          icon={Heart} title="Mis Corazones" 
-          count={profile?.likes_count} 
-          onClick={() => setActiveModal('likes')} 
-        />
-        <MenuOption 
-          icon={ShoppingBag} title="Mis Compras" 
-          count={profile?.purchases_count} 
-          onClick={() => setActiveModal('orders')} 
-        />
-      </div>
+        <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm">
+          <MenuOption
+            icon={ShoppingCart} title="Mi Carrito"
+            // Usamos el .length de la lista que viene del backend
+            count={profile?.cart_items?.length || 0} 
+            onClick={() => setActiveModal('cart')}
+          />
+          <MenuOption
+            icon={Heart} title="Mis Corazones"
+            // Usamos el .length de la lista de likes
+            count={profile?.liked_items?.length || 0} 
+            onClick={() => setActiveModal('likes')}
+          />
+          <MenuOption
+            icon={ShoppingBag} title="Mis Compras"
+            count={profile?.purchases_count || 0} // Este sí suele venir como número
+            onClick={() => setActiveModal('orders')}
+          />
+        </div>
+
 
       {/* --- MODALES RECICLABLES --- */}
         <Modal 
