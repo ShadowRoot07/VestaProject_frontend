@@ -15,17 +15,17 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
 
-        {/* Ruta para Usuarios y Admins */}
+        {/* Ruta para Usuarios normales */}
         <Route path="/dashboard" element={
-            <ProtectedRoute> {/* Quita el allowedRoles por ahora */}
+            <ProtectedRoute>
                 <Layout>
                     <DashboardUser />
                 </Layout>
             </ProtectedRoute>
-        } />  
+        } />
 
-        {/* Ruta SOLO para Admins */}
-        <Route path="/admin" element={
+        {/* Ruta para el Panel de Administrador (Cambiamos el path para que coincida) */}
+        <Route path="/admin-dashboard" element={
           <ProtectedRoute allowedRoles={['admin']}>
             <Layout>
                 <DashboardAdmin />
@@ -33,9 +33,6 @@ function App() {
           </ProtectedRoute>
         } />
 
-        {/* Redirección por defecto: Si no existe la ruta, al login */}
-        <Route path="*" element={<Navigate to="/login" />} />
-        // ... dentro de Routes
         <Route path="/shop" element={
             <ProtectedRoute>
                 <Layout><Shop /></Layout>
@@ -47,6 +44,9 @@ function App() {
                 <Layout><Profile /></Layout>
             </ProtectedRoute>
         } />
+
+        {/* Redirección por defecto */}
+        <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </BrowserRouter>
   );

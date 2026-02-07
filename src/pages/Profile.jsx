@@ -5,8 +5,10 @@ import {
   ShoppingCart, Heart, ShoppingBag, Wallet, 
   ChevronRight, Loader2, X, ShieldCheck 
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 export const Profile = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -87,7 +89,7 @@ export const Profile = () => {
             icon={ShieldCheck} 
             title="Panel de Administrador"
             count="Control Total"
-            onClick={() => window.location.href = '/admin-dashboard'}
+            onClick={() => navigate('/admin-dashboard')}
             isAdmin={true}
           />
         )}
