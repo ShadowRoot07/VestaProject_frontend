@@ -1,12 +1,15 @@
 import { useState, useEffect } from 'react';
 import api from '../services/api';
 import { Modal } from '../components/Modal';
-import { ShoppingCart, Heart, ShoppingBag, Wallet, ChevronRight, Loader2, X } from 'lucide-react';
+import { 
+  ShoppingCart, Heart, ShoppingBag, Wallet, 
+  ChevronRight, Loader2, X, ShieldCheck 
+} from 'lucide-react';
 
 export const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isProcessing, setIsProcessing] = useState(false); // Nuevo estado para no bloquear toda la pantalla
+  const [isProcessing, setIsProcessing] = useState(false);
   const [activeModal, setActiveModal] = useState(null);
 
   const fetchProfile = async () => {
@@ -27,11 +30,8 @@ export const Profile = () => {
   const handleCheckout = async () => {
     try {
       setIsProcessing(true);
-      // Ajustamos la ruta para que coincida con el router de interactions
       const response = await api.post('/interactions/checkout');
       alert(`¡Éxito! Gastaste $${response.data.total_paid}`);
-
-      // Recargamos los datos para actualizar balance y vaciar carrito visualmente
       await fetchProfile();
       setActiveModal(null);
     } catch (error) {
@@ -80,14 +80,21 @@ export const Profile = () => {
           count={profile?.purchases_count || 0}
           onClick={() => setActiveModal('orders')}
         />
+
+        {/* --- OPCIÓN DE ADMIN (Condicional) --- */}
+        {profile?.is_admin && (
+          <MenuOption
+            icon={ShieldCheck} 
+            title="Panel de Administrador"
+            count="Control Total"
+            onClick={() => window.location.href = '/admin-dashboard'}
+            isAdmin={true}
+          />
+        )}
       </div>
 
       {/* Modal de Carrito */}
-      <Modal
-        isOpen={activeModal === 'cart'}
-        onClose={() => setActiveModal(null)}
-        title="Mi Carrito"
-      >
+      <Modal isOpen={activeModal === 'cart'} onClose={() => setActiveModal(null)} title="Mi Carrito">
         <div className="space-y-4">
           {profile?.cart_items && profile.cart_items.length > 0 ? (
             <>
@@ -100,9 +107,7 @@ export const Profile = () => {
                       <p className="text-blue-600 font-bold">${item.price}</p>
                     </div>
                   </div>
-                  <button className="text-red-400 hover:text-red-600 p-2">
-                    <X size={18} />
-                  </button>
+                  <button className="text-red-400 hover:text-red-600 p-2"><X size={18} /></button>
                 </div>
               ))}
               <div className="pt-4 mt-2 border-t border-dashed">
@@ -128,11 +133,7 @@ export const Profile = () => {
       </Modal>
 
       {/* Modal de Mis Compras */}
-      <Modal
-        isOpen={activeModal === 'orders'}
-        onClose={() => setActiveModal(null)}
-        title="Mis Compras"
-      >
+      <Modal isOpen={activeModal === 'orders'} onClose={() => setActiveModal(null)} title="Mis Compras">
         <div className="space-y-3">
             {profile?.purchases_items && profile.purchases_items.length > 0 ? (
                 profile.purchases_items.map((item, index) => (
@@ -145,37 +146,36 @@ export const Profile = () => {
                     </div>
                 ))
             ) : (
-                <p className="text-center text-gray-500 py-4">Aún no has comprado nada. ¡Anímate! 🛍️</p>
+                <p className="text-center text-gray-500 py-4">Aún no has comprado nada. 🛍️</p>
             )}
         </div>
       </Modal>
 
       {/* Modal de Likes */}
-      <Modal
-        isOpen={activeModal === 'likes'}
-        onClose={() => setActiveModal(null)}
-        title="Productos Favoritos"
-      >
-        <p className="text-center text-gray-500 py-4">Aquí verás los productos que te hicieron feliz. ({profile?.liked_items?.length || 0})</p>
+      <Modal isOpen={activeModal === 'likes'} onClose={() => setActiveModal(null)} title="Productos Favoritos">
+        <p className="text-center text-gray-500 py-4">Aquí verás lo que te gustó. ({profile?.liked_items?.length || 0})</p>
       </Modal>
 
     </div>
   );
 };
 
-const MenuOption = ({ icon: Icon, title, count, onClick }) => (
+// Sub-componente actualizado para soportar estilos de Admin
+const MenuOption = ({ icon: Icon, title, count, onClick, isAdmin = false }) => (
   <button
     onClick={onClick}
-    className="w-full flex items-center justify-between p-5 hover:bg-gray-50 transition border-b border-gray-50 last:border-0"
+    className={`w-full flex items-center justify-between p-5 hover:bg-gray-50 transition border-b border-gray-50 last:border-0 ${isAdmin ? 'bg-red-50/50' : ''}`}
   >
     <div className="flex items-center gap-4">
-      <div className="p-3 bg-gray-100 text-gray-600 rounded-xl"><Icon size={22}/></div>
+      <div className={`p-3 rounded-xl ${isAdmin ? 'bg-red-100 text-red-600' : 'bg-gray-100 text-gray-600'}`}>
+        <Icon size={22}/>
+      </div>
       <div className="text-left">
-        <p className="font-bold text-gray-800">{title}</p>
-        <p className="text-sm text-blue-600 font-medium">{count} elementos</p>
+        <p className={`font-bold ${isAdmin ? 'text-red-700' : 'text-gray-800'}`}>{title}</p>
+        <p className={`text-sm font-medium ${isAdmin ? 'text-red-500' : 'text-blue-600'}`}>{count}</p>
       </div>
     </div>
-    <ChevronRight size={20} className="text-gray-300" />
+    <ChevronRight size={20} className={isAdmin ? 'text-red-300' : 'text-gray-300'} />
   </button>
 );
 
