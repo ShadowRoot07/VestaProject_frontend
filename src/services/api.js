@@ -1,8 +1,9 @@
 import axios from 'axios';
 
 const api = axios.create({
-  // Reemplaza esto con tu URL de Render cuando la tengas a mano
-  baseURL: 'https://vestaproject-backend.onrender.com',
+  // Vite usa import.meta.env para acceder a las variables de entorno
+  // Si no encuentra la variable VITE_API_URL, usará localhost por defecto
+  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:8000',
 });
 
 // Interceptor para añadir el token automáticamente a cada petición
