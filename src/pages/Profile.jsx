@@ -3,7 +3,7 @@ import api from '../services/api';
 import { Modal } from '../components/Modal';
 import {
   ShoppingCart, Heart, ShoppingBag, Wallet,
-  ChevronRight, Loader2, X, ShieldCheck, Trash2
+  ChevronRight, Loader2, X, ShieldCheck, Trash2, Package
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
@@ -31,10 +31,7 @@ export const Profile = () => {
 
   const handleRemoveFromCart = async (productId) => {
     try {
-      // Llamada al backend para eliminar el item del carrito
       await api.delete(`/interactions/cart/${productId}`);
-      
-      // Actualización optimista del estado local
       setProfile({
         ...profile,
         cart_items: profile.cart_items.filter(item => item.id !== productId)
@@ -77,7 +74,7 @@ export const Profile = () => {
 
         <div className="inline-flex items-center gap-3 bg-blue-50 text-blue-700 px-8 py-3 rounded-2xl font-black border border-blue-100">
           <Wallet size={20}/>
-          <span className="text-xl">${profile?.balance.toFixed(2)}</span>
+          <span className="text-xl">${profile?.balance?.toFixed(2) || "0.00"}</span>
         </div>
       </div>
 
@@ -118,13 +115,17 @@ export const Profile = () => {
               {profile.cart_items.map((item) => (
                 <div key={item.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-2xl border border-gray-100">
                   <div className="flex items-center gap-4">
-                    <img src={item.image_url} className="w-14 h-14 rounded-xl object-cover shadow-sm" alt={item.title} />
+                    {item.image_url ? (
+                      <img src={item.image_url} className="w-14 h-14 rounded-xl object-cover shadow-sm" alt={item.title} />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-gray-200 flex items-center justify-center"><Package size={20} className="text-gray-400"/></div>
+                    )}
                     <div>
                       <p className="font-bold text-gray-800 text-sm line-clamp-1">{item.title || item.name}</p>
-                      <p className="text-blue-600 font-black text-md">${item.price.toFixed(2)}</p>
+                      <p className="text-blue-600 font-black text-md">${item.price?.toFixed(2)}</p>
                     </div>
                   </div>
-                  <button 
+                  <button
                     onClick={() => handleRemoveFromCart(item.id)}
                     className="text-gray-300 hover:text-red-500 p-2 transition-colors"
                   >
@@ -132,7 +133,7 @@ export const Profile = () => {
                   </button>
                 </div>
               ))}
-              
+
               <div className="pt-6 mt-4 border-t border-dashed border-gray-200">
                 <div className="flex justify-between items-center mb-6 px-2">
                   <span className="text-gray-500 font-medium">Total estimado:</span>
@@ -168,12 +169,16 @@ export const Profile = () => {
                     <div key={index} className="flex items-center justify-between p-4 border border-gray-50 rounded-2xl bg-white shadow-sm">
                         <div className="flex items-center gap-4">
                             <div className="relative">
-                              <img src={item.image_url} className="w-14 h-14 rounded-xl object-cover" alt={item.title} />
+                              {item.image_url ? (
+                                <img src={item.image_url} className="w-14 h-14 rounded-xl object-cover" alt={item.title} />
+                              ) : (
+                                <div className="w-14 h-14 rounded-xl bg-gray-200 flex items-center justify-center"><Package size={20} className="text-gray-400"/></div>
+                              )}
                               <div className="absolute -bottom-1 -right-1 bg-green-500 border-2 border-white w-4 h-4 rounded-full"></div>
                             </div>
                             <div>
                                 <p className="font-bold text-sm text-gray-800 line-clamp-1">{item.title || item.name}</p>
-                                <p className="text-blue-600 font-black text-sm">${item.price.toFixed(2)}</p>
+                                <p className="text-blue-600 font-black text-sm">${item.price?.toFixed(2)}</p>
                             </div>
                         </div>
                         <div className="text-right">
@@ -193,7 +198,11 @@ export const Profile = () => {
           {profile?.liked_items?.length > 0 ? (
             profile.liked_items.map(item => (
               <div key={item.id} className="p-2 border rounded-2xl text-center">
-                <img src={item.image_url} className="w-full aspect-square object-cover rounded-xl mb-2" alt={item.title} />
+                {item.image_url ? (
+                  <img src={item.image_url} className="w-full aspect-square object-cover rounded-xl mb-2" alt={item.title} />
+                ) : (
+                  <div className="w-full aspect-square bg-gray-200 rounded-xl mb-2 flex items-center justify-center"><Package size={24} className="text-gray-400"/></div>
+                )}
                 <p className="text-xs font-bold text-gray-700 truncate">{item.title || item.name}</p>
               </div>
             ))
